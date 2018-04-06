@@ -491,7 +491,9 @@ var zoomPlugin = {
 			});
 
 			var currentDeltaX = null, currentDeltaY = null, panning = false;
-			var handlePan = function handlePan(e) {
+      var originalTooltipeFn = chartInstance.options.tooltips && chartInstance.options.tooltips.custom
+
+      var handlePan = function handlePan(e) {
 				if (!options.pan || !options.pan.enabled) {
 					return;
 				}
@@ -505,19 +507,35 @@ var zoomPlugin = {
 					doPan(chartInstance, deltaX, deltaY);
 				}
 			};
+			var hideTooltip = function hideTooltip() {
+				if (!options.tooltips || !options.tooltips.custom) {
+					return;
+				}
+
+        chartInstance.options.tooltips.custom.call(chartInstance, Object.assign(chartInstance.tooltip._model, {
+          opacity: 0
+        }))
+
+        chartInstance.options.tooltips.custom = function () {}
+			};
 
 			mc.on('panstart', function(e) {
 				currentDeltaX = 0;
 				currentDeltaY = 0;
+				hideTooltip()
 				handlePan(e);
 			});
 			mc.on('panmove', handlePan);
 			mc.on('panend', function(e) {
-				currentDeltaX = null;
-				currentDeltaY = null;
-				zoomNS.panCumulativeDelta = 0;
+			  currentDeltaX = null;
+			  currentDeltaY = null;
+                          if(originalTooltipeFn){
+          chartInstance.options.tooltips.custom = originalTooltipeFn
+        }
+                          zoomNS.panCumulativeDelta = 0;
 				setTimeout(function() { panning = false; }, 500);
-			});
+			  });
+
 
 			chartInstance.zoom._ghostClickHandler = function(e) {
 				if (panning) {

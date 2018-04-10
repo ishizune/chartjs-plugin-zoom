@@ -351,6 +351,16 @@ var zoomPlugin = {
 		var node = chartInstance.zoom.node = chartInstance.chart.ctx.canvas;
 
 		var options = chartInstance.options;
+		
+		    if(options.pan && options.pan.enabled){
+      node.onmousedown = function () {
+        node.style.cursor = '-webkit-grabbing';
+      }
+
+      node.onmouseup = function () {
+        node.style.cursor = '-webkit-grab';
+      }
+    }
 		var panThreshold = helpers.getValueOrDefault(options.pan ? options.pan.threshold : undefined, zoomNS.defaults.pan.threshold);
 
 		if (options.zoom && options.zoom.enabled) {

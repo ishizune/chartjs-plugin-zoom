@@ -542,6 +542,7 @@ var zoomPlugin = {
                           if(originalTooltipeFn){
           chartInstance.options.tooltips.custom = originalTooltipeFn
         }
+				chartInstance.tooltip.update(true);
                           zoomNS.panCumulativeDelta = 0;
 				setTimeout(function() { panning = false; }, 500);
 			  });
